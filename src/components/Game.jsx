@@ -25,6 +25,7 @@ function reducer(state, action) {
     newState.snake = generateSnake()
     newState.apple = null
     newState.direction = [0, 0]
+    newState.speed = 500
     newState.currentScore = 0
     newState.gameOver = false
   } else if (action.type === 'move_left' && Math.abs(newState.direction[0]) !== 1) {
@@ -53,6 +54,9 @@ function reducer(state, action) {
         newState.previousApples.push(newState.apple)
         newState.apple = generateApple(newSnake)
         newState.currentScore += 1
+        if (newState.speed > 100) {
+          newState.speed -= 10
+        }
       }
 
       if (
@@ -112,6 +116,7 @@ const initialState = {
   previousApples: [],
   apple: null,
   direction: [0, 0],
+  speed: 500,
   currentScore: 0,
   bestScore: Number.parseInt(localStorage.getItem(LOCAL_STORAGE_BEST_SCORE)) || 0,
   gameOver: false
@@ -119,7 +124,7 @@ const initialState = {
 
 export default function Game() {
   const [state, dispatch] = useReducer(reducer, initialState)
-  const { isStarted, snake, apple, direction, currentScore, bestScore, gameOver } = state
+  const { isStarted, snake, apple, direction, speed, currentScore, bestScore, gameOver } = state
   const [moving, setMoving] = useState(false)
 
   useEffect(() => {
@@ -133,14 +138,14 @@ export default function Game() {
       document.addEventListener('keydown', handleSnakeMoveWithKeyboard)
       timer = setInterval(() => {
         dispatch({ type: 'move_snake' })
-      }, 500)
+      }, speed)
     }
 
     return () => {
       document.removeEventListener('keydown', handleSnakeMoveWithKeyboard)
       clearInterval(timer)
     }
-  }, [moving, gameOver])
+  }, [moving, speed, gameOver])
 
   const startGame = () => {
     const action = { type: 'start_game' }
