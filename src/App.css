@@ -1,0 +1,3 @@
+button.btn {
+    @apply bg-slate-500 w-full focus:outline-none p-2 disabled:opacity-30
+}
